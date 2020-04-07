@@ -1,0 +1,16 @@
+spring:
+  profiles: localhost
+
+  redis:
+    timeout: 1
+    host: 58.151.114.245
+    port: 36379
+    password: partzone8686
+    database: 1
+
+  datasource:
+    hikari:
+      driverClassName: "com.mysql.cj.jdbc.Driver"
+      jdbc-url: "jdbc:mysql://13.230.36.120:3306/kakaoPayStock"
+      userName: "sa"
+      password: "alsdn3581"

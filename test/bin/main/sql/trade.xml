@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kakaoPayStock.test.dao.trade.ITradeDao">
+
+	<!-- 2018, 2019년 합계 금액이 가장 많은 고객 리스트  -->
+	<select id="getAccountTradeSumAmountByYear" statementType="CALLABLE" resultType="com.kakaoPayStock.test.dto.TradeAccount1Dto" >
+		SELECT zz.tradeYear
+			 , zz.accountName
+			 , zz.accountNo
+			 , zz.sumAmount
+		FROM (
+			SELECT @rn := IF(@last = z.tradeYear, @rn := @rn + 1, 1) AS rowNum
+				 , @last := z.tradeYear
+				 , z.tradeYear
+				 , z.accountName
+				 , z.accountNo
+				 , z.sumAmount
+			FROM (
+				SELECT YEAR(a.tradeDate) AS tradeYear
+					 , b.accountName AS accountName
+					 , a.accountNo AS accountNo
+					 , SUM(a.tradeAmount - a.commissionAmount ) AS sumAmount
+				FROM trade_list_tbl a
+				JOIN account_list_tbl  b ON a.accountNo  = b.accountNo 
+				WHERE a.isCanceled = 'N'
+				GROUP BY YEAR(a.tradeDate), a.accountNo, b.accountName
+			) z
+			CROSS JOIN (SELECT @rn := 0, @last = 0) x
+			WHERE z.tradeYear IN (2018, 2019)
+			ORDER BY 2 ASC, 5 DESC
+		) zz
+		WHERE rowNum = 1
+		ORDER BY 1 ASC;
+	</select>
+	
+	<!-- 2018년, 2019년 거래 없는 고객(계좌) 리스트 -->
+	<select id="getAccountTradeYnByYear" statementType="CALLABLE" resultType="com.kakaoPayStock.test.dto.TradeAccount2Dto" >
+		SELECT a.tradeYear, b.accountName, b.accountNo
+		FROM (
+			SELECT DISTINCT YEAR(a.tradeDate) tradeYear
+			FROM trade_list_tbl a
+			WHERE YEAR(a.tradeDate) IN (2018, 2019)
+		) a, account_list_tbl b
+		WHERE NOT EXISTS(SELECT 1 FROM trade_list_tbl z WHERE YEAR(z.tradeDate) = a.tradeYear AND z.accountNo = b.accountNo AND isCanceled = 'N')
+		ORDER BY 1 ASC, 3 ASC;
+	</select>
+	
+	<!-- 거래내역 상 연도 리스트 -->
+	<select id="getTradeYear" statementType="CALLABLE" resultType="com.kakaoPayStock.test.dto.YearDto" >
+		SELECT DISTINCT YEAR(a.tradeDate) AS tradeYear
+		FROM trade_list_tbl a
+		ORDER BY 1 ASC;
+	</select>
+	
+	<!-- 연도별 관리점별 거래금액 리스트 -->
+	<select id="getBranchSumAmtByYear" statementType="CALLABLE" parameterType="java.lang.Integer" resultType="com.kakaoPayStock.test.dto.BranchDto">
+		SELECT z.branchCode
+			 , z.branchName
+			 , z.sumAmount
+		FROM (
+			SELECT YEAR(c.tradeDate) AS tradeYear
+				 , a.branchCode 
+				 , a.branchName
+				 , SUM(c.tradeAmount) AS sumAmount
+			FROM branch_list_tbl a
+			JOIN account_list_tbl b ON a.branchCode = b.branchCode
+			JOIN trade_list_tbl c ON b.accountNo = c.accountNo
+			WHERE c.isCanceled = 'N'
+			GROUP BY YEAR(c.tradeDate), a.branchCode, a.branchName
+		) z
+		WHERE z.tradeYear = #{tradeYear}
+		ORDER BY 3 DESC;
+	</select>	
+
+	<!-- 지점명 검색으로 지점명, 관리점코드, 거래금액 합계 반환 -->
+	<select id="getBranchSumAmt" statementType="CALLABLE" parameterType="com.kakaoPayStock.test.dto.BranchRequestDto" resultType="com.kakaoPayStock.test.dto.BranchDto">
+		SELECT a.branchCode 
+			 , a.branchName
+			 , SUM(c.tradeAmount) AS sumAmount
+		FROM (
+			SELECT CASE WHEN EXISTS(SELECT 1 FROM branch_merge_info_tbl WHERE mergedBranchCode = z.branchCode) THEN (SELECT mergerBranchCode FROM branch_merge_info_tbl WHERE mergedBranchCode = z.branchCode) ELSE z.branchCode END AS branchCode
+			FROM branch_list_tbl z
+		) aa
+		JOIN branch_list_tbl a ON aa.branchCode = a.branchCode
+		JOIN account_list_tbl b ON a.branchCode = b.branchCode
+		JOIN trade_list_tbl c ON b.accountNo = c.accountNo
+		WHERE a.branchName = #{branchName}
+		  AND c.isCanceled = 'N'
+		GROUP BY a.branchCode, a.branchName
+		LIMIT 1;
+	</select>
+	
+</mapper>
