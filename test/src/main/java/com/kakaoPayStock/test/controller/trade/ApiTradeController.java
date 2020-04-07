@@ -88,7 +88,7 @@ public class ApiTradeController {
 	 */
 	@ResponseStatus(value=HttpStatus.NOT_FOUND)
 	@ExceptionHandler(HasNoBrCodeException.class)
-	public JsonResultDto hasNoBrCodeException() {
+	public JsonResultDto hasNoBrCodeExceptionHandler() {
 
 		return JsonResultDto.builder()
 							.code("404")

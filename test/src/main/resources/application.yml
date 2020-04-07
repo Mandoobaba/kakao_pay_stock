@@ -1,6 +1,4 @@
-spring:
-  profiles: localhost
-  
+spring:  
   datasource:
     hikari:
       driverClassName: "com.mysql.cj.jdbc.Driver"
