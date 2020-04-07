@@ -33,8 +33,9 @@ API 조회 URL
 * 4번 API의 분당점-판교점 통폐합 처리를 위해 branch_merge_info_tbl 정규 테이블 추가, 분당점의 거래/계좌 데이터를 판교점의 데이터로 조회하기 용이하도록 함
 * 4번 API의 brName 검색 결과가 없는(분당점) 조회 시, HasNoBrCodeException를 발생시켜 선언해놓은 Handler에서 요구사항 처리하도록 개발
 
-
-
+실행방법
+=================
+test.zip 다운로드 후 Gradle Project Import 하여 spring boot 앱 실행(localhost:8080)
 
 
 
