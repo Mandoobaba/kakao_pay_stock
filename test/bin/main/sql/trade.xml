@@ -5,18 +5,12 @@
 
 	<!-- 2018, 2019년 합계 금액이 가장 많은 고객 리스트  -->
 	<select id="getAccountTradeSumAmountByYear" statementType="CALLABLE" resultType="com.kakaoPayStock.test.dto.TradeAccount1Dto" >
-		SELECT zz.tradeYear
-			 , zz.accountName
-			 , zz.accountNo
-			 , zz.sumAmount
+		SELECT z.tradeYear
+			 , z.accountName
+			 , z.accountNo
+			 , z.sumAmount
 		FROM (
-			SELECT @rn := IF(@last = z.tradeYear, @rn := @rn + 1, 1) AS rowNum
-				 , @last := z.tradeYear
-				 , z.tradeYear
-				 , z.accountName
-				 , z.accountNo
-				 , z.sumAmount
-			FROM (
+			(
 				SELECT YEAR(a.tradeDate) AS tradeYear
 					 , b.accountName AS accountName
 					 , a.accountNo AS accountNo
@@ -24,14 +18,27 @@
 				FROM trade_list_tbl a
 				JOIN account_list_tbl  b ON a.accountNo  = b.accountNo 
 				WHERE a.isCanceled = 'N'
+				  AND YEAR(a.tradeDate) = 2018
 				GROUP BY YEAR(a.tradeDate), a.accountNo, b.accountName
-			) z
-			CROSS JOIN (SELECT @rn := 0, @last = 0) x
-			WHERE z.tradeYear IN (2018, 2019)
-			ORDER BY 2 ASC, 5 DESC
-		) zz
-		WHERE rowNum = 1
-		ORDER BY 1 ASC;
+				ORDER BY 4 DESC
+				LIMIT 1
+			)
+			UNION ALL
+			(
+				SELECT YEAR(a.tradeDate) AS tradeYear
+					 , b.accountName AS accountName
+					 , a.accountNo AS accountNo
+					 , SUM(a.tradeAmount - a.commissionAmount ) AS sumAmount
+				FROM trade_list_tbl a
+				JOIN account_list_tbl  b ON a.accountNo  = b.accountNo 
+				WHERE a.isCanceled = 'N'
+				  AND YEAR(a.tradeDate) = 2019
+				GROUP BY YEAR(a.tradeDate), a.accountNo, b.accountName
+				ORDER BY 4 DESC
+				LIMIT 1
+			)
+		) z
+		ORDER BY 1 ASC, 3 DESC
 	</select>
 	
 	<!-- 2018년, 2019년 거래 없는 고객(계좌) 리스트 -->
