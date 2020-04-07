@@ -1,4 +1,4 @@
-package com.kakaoPayStock.test.controller;
+package com.kakaoPayStock.test.controller.trade;
 
 import java.util.List;
 

@@ -9,10 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,7 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.kakaoPayStock.test.controller.ApiTradeController;
+import com.kakaoPayStock.test.controller.trade.ApiTradeController;
 import com.kakaoPayStock.test.dto.BranchDto;
 import com.kakaoPayStock.test.dto.TradeAccount1Dto;
 import com.kakaoPayStock.test.dto.TradeAccount2Dto;
@@ -37,9 +35,6 @@ public class ApiTradeControllerMockTest {
 	
 	@MockBean
 	private ITradeService tradeService;
-	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	
 	/**
 	 * 2018, 2019년 합계 금액이 가장 많은 고객 리스트를 출력하는 Controller의 Unit Test Method
@@ -150,6 +145,7 @@ public class ApiTradeControllerMockTest {
 		   	   .andExpect(content().contentType(MediaType.APPLICATION_JSON))
 		   	   .andExpect(content().json("{\"branchCode\":\"A\",\"branchName\":\"판교점\",\"sumAmount\":174620000}"))
 			   .andDo(print());
+		
 		/*
 		 * 분당점의 경우, 판교점과 통폐합 처리됐으므로 결과가 없음.
 		 */

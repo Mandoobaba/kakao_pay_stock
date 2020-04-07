@@ -1,13 +1,6 @@
 spring:
   profiles: localhost
-
-  redis:
-    timeout: 1
-    host: 58.151.114.245
-    port: 36379
-    password: partzone8686
-    database: 1
-
+  
   datasource:
     hikari:
       driverClassName: "com.mysql.cj.jdbc.Driver"
