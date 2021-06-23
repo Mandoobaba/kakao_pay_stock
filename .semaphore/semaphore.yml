@@ -10,10 +10,7 @@ blocks:
       jobs:
         - name: yarn install
           commands:
-            - sem-version node 8
-            - checkout
-            - yarn install
-            - yarn test
+            - echo "start!!!"
   - name: 'Block #2'
     task:
       jobs:
