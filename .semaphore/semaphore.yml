@@ -1,0 +1,21 @@
+version: v1.0
+name: Node JS
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Install dependencies
+    task:
+      jobs:
+        - name: yarn install
+          commands:
+            - sem-version node 8
+            - checkout
+            - yarn install
+            - yarn test
+promotions:
+  - name: Promotion 1
+    pipeline_file: pipeline_2.yml
+  - name: Promotion 2
+    pipeline_file: pipeline_3.yml
