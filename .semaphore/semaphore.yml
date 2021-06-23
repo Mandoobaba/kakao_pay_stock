@@ -14,6 +14,13 @@ blocks:
             - checkout
             - yarn install
             - yarn test
+  - name: 'Block #2'
+    task:
+      jobs:
+        - name: 'Job #1'
+          commands:
+            - echo "hehehehe"
+          parallelism: 7
 promotions:
   - name: Promotion 1
     pipeline_file: pipeline_2.yml
