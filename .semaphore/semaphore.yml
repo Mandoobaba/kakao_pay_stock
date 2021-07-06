@@ -11,13 +11,28 @@ blocks:
         - name: yarn install
           commands:
             - echo "start!!!"
+    dependencies: []
   - name: 'Block #2'
     task:
       jobs:
         - name: 'Job #1'
           commands:
             - echo "hehehehe"
-          parallelism: 7
+    dependencies:
+      - Install dependencies
+  - name: 'Block #3'
+    dependencies:
+      - 'Block #2'
+    task:
+      jobs:
+        - name: 'Job #3'
+          commands: []
+        - name: 'Job #2'
+          commands: []
+        - name: 'Job #3'
+          commands: []
+        - name: 'Job #4'
+          commands: []
 promotions:
   - name: Promotion 1
     pipeline_file: pipeline_2.yml
